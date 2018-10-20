@@ -1,0 +1,35 @@
+body {
+    height: 100vh;
+    background: url("../image/AdministratorLogin.jpg") no-repeat;
+    background-size: 100% 100%;
+}
+.form{
+    background: rgba(255,255,255,0.7);
+    width: 30%;
+    float: right;
+    margin-top:10%;
+    margin-right: 10%;
+}
+
+.input{
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 6%;
+}
+
+.title{
+    text-align: center;
+    margin-bottom: 4%;
+}
+.botton-login-div{
+    margin-bottom: 5%;
+    margin-left: 10%;
+}
+.botton-login{
+    width: 88%;
+}
+
+.button-reigeterAndFind{
+    float: right;
+    padding-bottom: 3%;
+}

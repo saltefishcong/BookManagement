@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>login</title>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous"/>
+
+    <link rel="stylesheet" th:href="@{/Administrator/Login.css}"/>
+</head>
+
+<body>
+<div class="form">
+    <h1 class="title">Welcome Login to</h1>
+    <h2 class="title">
+        <small>
+            <mark>CongCong Self-service library</mark>
+        </small>
+    </h2>
+    <div class="form-group input">
+        <label for="Username">Username</label>
+        <input type="text" class="form-control" id="Username" placeholder="Username">
+    </div>
+    <div class="form-group input">
+        <label for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+    </div>
+    <div class="botton-login-div">
+        <button class="btn btn-primary btn-lg botton-login" id="login">登录</button>
+    </div>
+    <div class="button-reigeterAndFind ">
+        <button class="btn btn-link">忘记密码</button>
+        <button class="btn btn-link">注册</button>
+    </div>
+</div>
+</body>
+<script th:src="@{/tools.js}" language=javascript></script>
+<script th:src="@{/Administrator/login.js}" language=javascript></script>
+</html>

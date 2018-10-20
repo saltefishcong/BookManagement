@@ -1,0 +1,10 @@
+server:
+   port: 8080
+
+
+spring:
+     datasource:
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://10.0.19.59:3306/BookManager?characterEncoding=UTF-8
