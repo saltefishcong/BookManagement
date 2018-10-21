@@ -26,9 +26,9 @@ public class BookService {
        return bookMapper.findBook(identification);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED,readOnly = true,rollbackFor = {Exception.class})
-    public Book findBook(String book_name,Object object){
-        return bookMapper.findBook(book_name,object);
+   @Transactional(propagation = Propagation.REQUIRED,readOnly = true,rollbackFor = {Exception.class})
+    public Book findBookMax(String book_name){
+        return bookMapper.findBookMax(book_name);
     }
 
     @Transactional(propagation = Propagation.REQUIRED,readOnly = true,rollbackFor = {Exception.class})
@@ -77,14 +77,4 @@ public class BookService {
         return book;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = {Exception.class})
-    public List<Book> deleteBooks(String book_name,int book_num) throws SQLException{
-        List<Book> list=bookMapper.findBooks(book_name,book_num);
-        int x=0;
-        for(Book book:list){
-            x+=bookMapper.deleteBook(book.getIdentification());
-        }
-        check.checkException(x,"删除图书失败");
-        return  list;
-    }
 }

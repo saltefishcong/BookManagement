@@ -12,19 +12,15 @@ public interface BookMapper {
     @Select("select * from Book where identification=#{identification}")
     Book findBook(String identification);  /*  寻找图书 */
 
-    @Select("select * from Book where name=#{book_name} limit 0,1")
-    Book findBook(@Param("book_name") String book_name,Object ojbect); /*  寻找图书 */
-
     @Select("select * from Book where name=#{book_name} and flag=0 limit 0,1")
     Book findBooker(String book_name);    /*  借书的时候由借记类调用，查询一本同名没被借的书 */
+
+    @Select("select * from Book where name=#{book_name} order by ID desc limit  1")
+    Book findBookMax(String book_name);  /*  查询名字相同id编号最大的一本书  */
 
     @ResultType(Book.class)
     @Select("select * from Book where name=#{book_name} and flag=0")
     List<Book> findBooks(String book_name);    /* 查询所有没有被借的同一本书 */
-
-    @ResultType(Book.class)
-    @Select("select * from Book where name=#{book_name} and flag=0 limit 0,#{book_num}")
-    List<Book> findBooks(@Param("book_name") String book_name,@Param("book_num") int book_num);  /* 查询指定数量没有被借的同一本书 */
 
     @Insert("insert into Book (identification,name,author,introduction,flag) values " +
             "(#{book.identification},#{book.name},#{book.author},#{book.introduction},0)")

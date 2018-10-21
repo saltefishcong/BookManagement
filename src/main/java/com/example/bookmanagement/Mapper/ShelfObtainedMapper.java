@@ -3,6 +3,8 @@ package com.example.bookmanagement.Mapper;
 import com.example.bookmanagement.eity.ShelfObtained;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface ShelfObtainedMapper {
 
@@ -36,4 +38,7 @@ public interface ShelfObtainedMapper {
 
     @Update("update ShelfObtained set flag = #{shelfObtained.flag} where book_name= #{shelfObtained.book_name}")
     int updateStatus(@Param("shelfObtained") ShelfObtained shelfObtained);
+
+    @Select("select * from ShelfObtained")
+    List<ShelfObtained> selectShelfObtaineds();
 }

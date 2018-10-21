@@ -1,8 +1,10 @@
 package com.example.bookmanagement.service;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.example.bookmanagement.Mapper.ShelfObtainedMapper;
 import com.example.bookmanagement.eity.Book;
 import com.example.bookmanagement.eity.ShelfObtained;
+import com.example.bookmanagement.factory.ShelfObtainedFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,11 +27,23 @@ public class ShelfObtainedService {
     @Autowired
     private BookService book;
 
+    @Autowired
+    private ShelfObtainedFactory factory;
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public ShelfObtained addShelfObtained(ShelfObtained shelfObtained,String author,String introduction)
             throws SQLException {    //上架图书
-        if (selectShelfObtained(shelfObtained.getBook_name()) != null) {
+        ShelfObtained shelfObtained1=selectShelfObtained(shelfObtained.getBook_name());
+        if (shelfObtained1!= null && shelfObtained1.isFlag()==false) {
             throw new SQLException("图书已经上架,不能重复上架");
+        }
+        if(shelfObtained1!= null && shelfObtained1.isFlag()==true){
+            shelfObtained1.setFlag(false);
+            updateStatus(shelfObtained1);
+            List<ShelfObtained> list=new ArrayList<>();
+            list.add(shelfObtained);
+            addBookNum(list);
+            return shelfObtained;
         }
         check.checkException(shelfObtainedMapper.addShelfObtained(shelfObtained), "图书上架失败");
         book.addBook(new Book(
@@ -57,25 +72,41 @@ public class ShelfObtainedService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public Book addBookNum(ShelfObtained shelfObtained) throws SQLException {
-        ShelfObtained shelfObtained2=selectShelfObtained(shelfObtained.getBook_name());
-        check.checkObject(shelfObtained2, "没有对应的图书");
-        check.checkStatus(selectShelfObtainedStatus(shelfObtained.getBook_name()), "图书已经下架");
-        check.checkException(shelfObtainedMapper.addBookNum(shelfObtained), "添加图书库存数量失败");
-        Book book2=book.findBook(shelfObtained.getBook_name(),null);
-        book2.setIdentification(shelfObtained2.getCategory_num()+"");
-        book2.setFlag(true);
-        return book.addBook(book2,shelfObtained.getBook_num(),shelfObtained2.getBook_num());
+    public Book addBookNum(List<ShelfObtained> shelfObtaineds) throws SQLException {
+        Book book2=null;
+        for(int i=0;i<shelfObtaineds.size();i++){
+            ShelfObtained shelfObtained2=selectShelfObtained(shelfObtaineds.get(i).getBook_name());
+            check.checkObject(shelfObtained2, "没有对应的图书");
+            check.checkStatus(selectShelfObtainedStatus(shelfObtaineds.get(i).getBook_name()), "图书已经下架");
+            check.checkException(shelfObtainedMapper.addBookNum(shelfObtaineds.get(i)), "添加图书库存数量失败");
+            book2=book.findBookMax(shelfObtaineds.get(i).getBook_name());
+            int i_index=book2.getIdentification().indexOf(shelfObtained2.getCategory_num()+"");
+            int index=Integer.parseInt(book2.getIdentification().substring(i_index+13,book2.getIdentification().length()));
+            book2.setIdentification(shelfObtained2.getCategory_num()+"");
+            book2.setFlag(false);
+            book.addBook(book2,shelfObtaineds.get(i).getBook_num(), index);
+        }
+        return book2;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public List<Book> deleteBookNum(ShelfObtained shelfObtained) throws SQLException {
-        check.checkObject(selectShelfObtained(shelfObtained.getBook_name()), "没有对应的图书");
-        check.checkStatus(selectShelfObtainedStatus(shelfObtained.getBook_name()), "图书已经下架");
-        check.checkException(findOnlineBookNum(shelfObtained.getBook_name())
-                - shelfObtained.getBook_num(), "图书下架的数量不够");
-        check.checkException(shelfObtainedMapper.deleteBookNum(shelfObtained), "更改图书库存数量失败");
-        return book.deleteBooks(shelfObtained.getBook_name(),shelfObtained.getBook_num());
+    public List<Book> deleteBookNum(String[] identifications) throws SQLException {   //用户只能通过标识来删除
+        List<Book> list=new ArrayList<>();
+        Book book2=null;
+        ShelfObtained shelfObtained=factory.getShelfObtained();
+        for(int i=0;i<identifications.length;i++){
+            book2=book.findBook(identifications[i]);
+            check.checkObject(book2,"没有找到相应的图书");
+            check.checkStatus(book2.isFlag()==false,"该图书可能不在图书馆");
+            check.checkException(findOnlineBookNum(book2.getName())- 1, "请查询清楚图书的信息");
+            book.deleteBook(identifications[i]);
+            shelfObtained.setBook_name(book2.getName());
+            shelfObtained.setBook_num(1);
+            check.checkException(shelfObtainedMapper.deleteBookNum(shelfObtained), "更改图书库存数量失败");
+            list.add(book2);
+        }
+        shelfObtained=null;
+        return list;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
@@ -88,5 +119,10 @@ public class ShelfObtainedService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class},readOnly = true)
     public int findOnlineBookNum(String book_name){
         return shelfObtainedMapper.selectOnlineBookNum(book_name);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class},readOnly = true)
+    public List<ShelfObtained> findShelfObtaineds(){
+        return shelfObtainedMapper.selectShelfObtaineds();
     }
 }

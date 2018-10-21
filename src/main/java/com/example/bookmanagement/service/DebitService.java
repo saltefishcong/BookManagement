@@ -36,7 +36,7 @@ public class DebitService {
         ShelfObtained she=new ShelfObtained();
         she.setBook_name(book2.getName());
         she.setBook_num(1);
-        shelfObtained.deleteBookNum(she);
+      //  shelfObtained.deleteBookNum(she);
         book.updateStatus(book2);
         check.checkException(debitMapper.addDebit(debit), "借书异常");
         return debit;

@@ -3,22 +3,17 @@ package com.example.bookmanagement.control;
 import com.example.bookmanagement.eity.Book;
 import com.example.bookmanagement.eity.ShelfObtained;
 import com.example.bookmanagement.service.ShelfObtainedService;
-import com.example.bookmanagement.service.checkService;
 import com.example.bookmanagement.verification.add;
 import com.example.bookmanagement.verification.status;
-import com.example.bookmanagement.verification.update;
 import com.example.bookmanagement.view.ResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -51,21 +46,21 @@ public class ShelfObtainedController {
     @Transactional(propagation = Propagation.REQUIRED)
     @RequestMapping(value = "/addNum", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseVO<Book> addBookNum(@Validated(value = {update.class}) ShelfObtained shelfObtained)
+    public ResponseVO<Book> addBookNum(@RequestBody  List<ShelfObtained> shelfObtaineds)
             throws Exception {
         return new ResponseVO<>(200
                 , "增加成功"
-                , service.addBookNum(shelfObtained));
+                , service.addBookNum(shelfObtaineds));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     @RequestMapping(value = "/deleteNum", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseVO<List<Book>> deleteBookNum(@Validated(value = {update.class}) ShelfObtained shelfObtained)
+    public ResponseVO<List<Book>> deleteBookNum(@RequestBody String[] identifications)
             throws Exception {
         return new ResponseVO<>(200
                 , "删除成功"
-                ,  service.deleteBookNum(shelfObtained));
+                ,  service.deleteBookNum(identifications));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -76,5 +71,14 @@ public class ShelfObtainedController {
         return new ResponseVO<>(200
                 , "更改图书状态成功"
                 , service.updateStatus(shelfObtained));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @ResponseBody
+    @RequestMapping(value = "/findShelfObtaineds",method = RequestMethod.POST)
+    public ResponseVO<List<ShelfObtained>> findShelfObtaineds(){
+        return  new ResponseVO<>(200
+                ,"查询成功"
+                ,service.findShelfObtaineds());
     }
 }

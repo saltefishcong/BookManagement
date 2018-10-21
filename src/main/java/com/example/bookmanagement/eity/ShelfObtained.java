@@ -3,9 +3,13 @@ package com.example.bookmanagement.eity;
 import com.example.bookmanagement.verification.add;
 import com.example.bookmanagement.verification.status;
 import com.example.bookmanagement.verification.update;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 
+@Component
+@Scope("prototype")
 public class ShelfObtained {  /*  书本上下架类 */
     /*  数据库自增ID */
     private int id;
@@ -97,6 +101,7 @@ public class ShelfObtained {  /*  书本上下架类 */
 
     @Override
     public String toString() {
-        return book_name + "  " + book_num + "  " + online_book_num + "   " + category + "   " + category_num;
+        return super.toString()+"     "+book_name + "  " + book_num
+                + "  " + online_book_num + "   " + category + "   " + category_num;
     }
 }
