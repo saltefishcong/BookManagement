@@ -47,6 +47,7 @@ public class DebitService {
             debit.setExpected_return_time(time+(1000*60*24*60));
             debit.setFlag(false);
             check.checkException(debitMapper.addDebit(debit), "借书异常");
+            // s
         }
         debit=null;
         return debits;
