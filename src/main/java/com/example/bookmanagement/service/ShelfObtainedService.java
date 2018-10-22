@@ -90,7 +90,7 @@ public class ShelfObtainedService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public List<Book> deleteBookNum(String[] identifications) throws SQLException {   //用户只能通过标识来删除
+    public List<Book> deleteBookNum(String[] identifications) throws SQLException {   //管理员的调用删除方法
         List<Book> list=new ArrayList<>();
         Book book2=null;
         ShelfObtained shelfObtained=factory.getShelfObtained();
@@ -124,5 +124,13 @@ public class ShelfObtainedService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class},readOnly = true)
     public List<ShelfObtained> findShelfObtaineds(){
         return shelfObtainedMapper.selectShelfObtaineds();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
+    public int deleteBookNumer(String book_name) throws SQLException{   //
+        check.checkException(findOnlineBookNum(book_name)-1,"请联系管理员核实图书的信息");
+        int x=shelfObtainedMapper.deleteBookNumer(book_name);
+        check.checkException(x,"减少图书数量异常");
+         return  x;
     }
 }

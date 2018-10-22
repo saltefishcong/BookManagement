@@ -3,6 +3,8 @@ package com.example.bookmanagement.Mapper;
 import com.example.bookmanagement.eity.Debit;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface DebitMapper {
 
@@ -14,7 +16,13 @@ public interface DebitMapper {
             " and book_identification=#{debit.book_identification}")
     int updateDebit(@Param("debit") Debit debit);
 
-    @Select("select * from BookDebit where user_identification=#{debit.user_identification} " +
-            " and book_identification=#{debit.book_identification}")
-    Debit findDebit(@Param("debit") Debit debit);
+    @Select("select * from BookDebit where book_identification=#{book_identification}")
+    Debit findDebit(String book_identification);
+
+    @Select("select * from  BookDebit")
+    List<Debit> findDebits();
+
+    @Select("select * from BookDebit where user_identification=#{user_identification}")
+    List<Debit> findUserDebits(String user_identification);
 }
+
