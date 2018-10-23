@@ -1,4 +1,4 @@
-function ajaxs(address, type, async, data, dataType) {
+function ajaxs(address, type, async, data, dataType, stat) {
     $.ajax({
         url: address,
         type: type,
@@ -7,9 +7,11 @@ function ajaxs(address, type, async, data, dataType) {
         dataType: dataType,
         success: function (result) {
             alert(result);
+            stat.next(result);
         },
         err: function (e) {
             alert(e);
+            stat.next(e);
         }
     })
 }

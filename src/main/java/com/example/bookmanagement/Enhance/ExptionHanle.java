@@ -1,5 +1,8 @@
 package com.example.bookmanagement.Enhance;
 
+import com.example.bookmanagement.eity.TransException;
+import com.example.bookmanagement.view.ResponseVO;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -25,10 +28,11 @@ public class ExptionHanle {
     }
 
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({TransException.class})
     @ResponseBody
-    public String excption(Exception e){
-        System.out.println(" -1 " +e.getMessage());
-        return e.getMessage();
+    public ResponseVO<Object> tranExcption(TransException e){
+        return new ResponseVO<>(500
+                ,e.getMessage()
+                ,null);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.bookmanagement.service;
 
 import com.example.bookmanagement.Mapper.UserMapper;
+import com.example.bookmanagement.eity.TransException;
 import com.example.bookmanagement.eity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,26 +21,26 @@ public class UserService {
     private checkService check;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public User addUser(User user) throws SQLException {
+    public User addUser(User user) throws TransException {
         check.checkException(userMapper.addUser(user), "用户注册失败");
         return user;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public User UpdateInfo(User user) throws SQLException {
+    public User UpdateInfo(User user) throws TransException {
         check.checkObject(loginUser(user),"请登录");
         check.checkException(userMapper.UpdateInfo(user), "更改用户信息异常");
         return user;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, rollbackFor = {Exception.class})
-    public User loginUser(User user) throws SQLException {
+    public User loginUser(User user) throws TransException {
         check.checkObject(userMapper.loginUser(user), "登录失败");
         return user;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public User deleteUser(User user) throws SQLException {
+    public User deleteUser(User user) throws TransException {
         user = userMapper.findUser(user);
         check.checkObject(user, "找不到对应的用户");
         check.checkException(userMapper.deleteUser(user), "删除用户失败");

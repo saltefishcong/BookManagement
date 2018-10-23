@@ -29,7 +29,7 @@ public class DebitController {
     public ResponseVO<List<Debit>> addDebit(@RequestBody List<Debit> debits) throws Exception {
         return new ResponseVO<>(200
                 , "借书成功"
-                , service.addDebit(debits));
+                , service.addDebit(debits,"o5dsc3l0ix"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -59,12 +59,4 @@ public class DebitController {
                 ,service.findUserDebits(user_identification));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    @ResponseBody
-    @RequestMapping(value = "/findDebit",method = RequestMethod.POST)
-    public ResponseVO<Debit> findDebit(@NotNull String book_identification) throws Exception{
-         return  new ResponseVO<>(200
-                 ,"查询成功"
-                 ,service.findDebit(book_identification));
-    }
 }

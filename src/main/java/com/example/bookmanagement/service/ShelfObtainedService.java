@@ -4,6 +4,7 @@ import ch.qos.logback.core.net.SyslogOutputStream;
 import com.example.bookmanagement.Mapper.ShelfObtainedMapper;
 import com.example.bookmanagement.eity.Book;
 import com.example.bookmanagement.eity.ShelfObtained;
+import com.example.bookmanagement.eity.TransException;
 import com.example.bookmanagement.factory.ShelfObtainedFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,10 @@ public class ShelfObtainedService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public ShelfObtained addShelfObtained(ShelfObtained shelfObtained,String author,String introduction)
-            throws SQLException {    //上架图书
+            throws TransException {    //上架图书
         ShelfObtained shelfObtained1=selectShelfObtained(shelfObtained.getBook_name());
         if (shelfObtained1!= null && shelfObtained1.isFlag()==false) {
-            throw new SQLException("图书已经上架,不能重复上架");
+            throw new TransException("图书已经上架,不能重复上架");
         }
         if(shelfObtained1!= null && shelfObtained1.isFlag()==true){
             shelfObtained1.setFlag(false);
@@ -53,7 +54,7 @@ public class ShelfObtainedService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})       //下架图书
-    public List<Book> deleteShelfObtained(String book_name) throws SQLException {
+    public List<Book> deleteShelfObtained(String book_name) throws TransException {
         check.checkObject(selectShelfObtained(book_name), "没有对应的图书");
         check.checkStatus(selectShelfObtainedStatus(book_name), "图书已经下架");
         check.checkException(shelfObtainedMapper.deleteShelfObtained(book_name
@@ -67,12 +68,12 @@ public class ShelfObtainedService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, rollbackFor = {Exception.class})
-    public boolean selectShelfObtainedStatus(String book_name) throws SQLException {     //图书是否已经下架
+    public boolean selectShelfObtainedStatus(String book_name) throws TransException {     //图书是否已经下架
         return shelfObtainedMapper.selectStatus(book_name) == 0 ? true : false;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public Book addBookNum(List<ShelfObtained> shelfObtaineds) throws SQLException {
+    public Book addBookNum(List<ShelfObtained> shelfObtaineds) throws TransException {
         Book book2=null;
         for(int i=0;i<shelfObtaineds.size();i++){
             ShelfObtained shelfObtained2=selectShelfObtained(shelfObtaineds.get(i).getBook_name());
@@ -90,7 +91,7 @@ public class ShelfObtainedService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public List<Book> deleteBookNum(String[] identifications) throws SQLException {   //管理员的调用删除方法
+    public List<Book> deleteBookNum(String[] identifications) throws TransException {   //管理员的调用删除方法
         List<Book> list=new ArrayList<>();
         Book book2=null;
         ShelfObtained shelfObtained=factory.getShelfObtained();
@@ -110,7 +111,7 @@ public class ShelfObtainedService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public ShelfObtained updateStatus(ShelfObtained shelfObtained) throws SQLException {
+    public ShelfObtained updateStatus(ShelfObtained shelfObtained) throws TransException {
         check.checkObject(selectShelfObtained(shelfObtained.getBook_name()), "没有对应的图书");
         check.checkException(shelfObtainedMapper.updateStatus(shelfObtained), "更改图书状态失败");
         return shelfObtained;
@@ -127,10 +128,16 @@ public class ShelfObtainedService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public int deleteBookNumer(String book_name) throws SQLException{   //
+    public int deleteBookNumer(String book_name) throws TransException{   //
         check.checkException(findOnlineBookNum(book_name)-1,"请联系管理员核实图书的信息");
         int x=shelfObtainedMapper.deleteBookNumer(book_name);
         check.checkException(x,"减少图书数量异常");
          return  x;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
+    public int addBookNumer(String book_name) throws TransException{
+        check.checkException(shelfObtainedMapper.addBookNumer(book_name),"增加图书数量异常");
+        return 1;
     }
 }

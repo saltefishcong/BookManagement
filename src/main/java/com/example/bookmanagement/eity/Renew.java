@@ -1,9 +1,15 @@
 package com.example.bookmanagement.eity;
 
+import com.example.bookmanagement.verification.add;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.constraints.NotNull;
+
 public class Renew {  /*  续借类  */
     /*  数据库自增ID  */
     private int id;
     /*   借记类主键  */
+    @NotNull(groups = {add.class},message = "续借id不能为空")
     private int book_debit_id;
     /*   续借书的时间 */
     private long time;
@@ -49,4 +55,9 @@ public class Renew {  /*  续借类  */
     }
 
     public Renew(){}
+
+    @Override
+    public String toString() {
+        return super.toString() +"  "+getBook_debit_id()+"   "+getTime()+"   "+getDay();
+    }
 }

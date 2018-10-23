@@ -21,6 +21,9 @@ public interface ShelfObtainedMapper {
     @Update("update ShelfObtained set online_book_num=online_book_num - 1 where book_name=#{book_name}")
     int deleteBookNumer(String book_name);
 
+    @Update("update ShelfObtained set online_book_num=online_book_num + 1 where book_name=#{book_name}")
+    int addBookNumer(String book_name);
+
     @Update("update ShelfObtained set book_num=book_num + #{shelfObtained.book_num}" +
             ",online_book_num=online_book_num + #{shelfObtained.book_num} " +
             " where book_name =#{shelfObtained.book_name} ")

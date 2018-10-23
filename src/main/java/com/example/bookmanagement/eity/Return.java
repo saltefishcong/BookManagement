@@ -1,9 +1,14 @@
 package com.example.bookmanagement.eity;
 
+import com.example.bookmanagement.verification.add;
+
+import javax.validation.constraints.NotNull;
+
 public class Return {   /* 还书类 */
     /*  数据库自增ID    */
     private int id;
     /*  借记类主键 */
+    @NotNull(groups = {add.class}, message = "借阅类标识不能为空")
     private int book_debit_id;
     /*  实际还书时间  */
     private long actual_return_time;
@@ -37,5 +42,6 @@ public class Return {   /* 还书类 */
         this.actual_return_time = actual_return_time;
     }
 
-    public Return(){}
+    public Return() {
+    }
 }

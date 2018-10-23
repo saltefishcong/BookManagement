@@ -3,6 +3,7 @@ package com.example.bookmanagement.service;
 import com.example.bookmanagement.Mapper.BookMapper;
 import com.example.bookmanagement.eity.Book;
 import com.example.bookmanagement.eity.ShelfObtained;
+import com.example.bookmanagement.eity.TransException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,7 +23,7 @@ public class BookService {
     private checkService check;
 
     @Transactional(propagation = Propagation.REQUIRED,readOnly = true,rollbackFor = {Exception.class})
-    public Book findBook(String identification) throws SQLException{
+    public Book findBook(String identification) throws TransException {
        return bookMapper.findBook(identification);
     }
 
@@ -32,7 +33,7 @@ public class BookService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED,readOnly = true,rollbackFor = {Exception.class})
-    public Book findBooker(String book_name) throws SQLException{
+    public Book findBooker(String book_name) throws TransException{
         Book book=bookMapper.findBooker(book_name);
         return book;
     }
@@ -43,7 +44,7 @@ public class BookService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = {Exception.class})
-    public Book addBook(Book book,int book_num,int index) throws SQLException{
+    public Book addBook(Book book,int book_num,int index) throws TransException{
         int x=0;
         for(int i=1;i<=book_num;i++){
             ++index;
@@ -56,7 +57,7 @@ public class BookService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = {Exception.class})
-    public Book deleteBook(String identification) throws SQLException{
+    public Book deleteBook(String identification) throws TransException{
         Book book=findBook(identification);
         check.checkObject(book,"没有对应的图书");
         check.checkException(bookMapper.deleteBook(identification),"删除图书失败");
@@ -64,14 +65,14 @@ public class BookService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = {Exception.class})
-    public List<Book> deleteBooks(String book_name) throws SQLException{
+    public List<Book> deleteBooks(String book_name) throws TransException{
          List<Book> list=findBooks(book_name);
          check.checkException(bookMapper.deleteBooks(book_name),"删除图书失败");
          return list;
     }
 
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = {Exception.class})
-    public Book updateStatus(Book book) throws  SQLException{
+    public Book updateStatus(Book book) throws  TransException{
         check.checkObject(findBook(book.getIdentification()),"查找不到对应的书本");
         check.checkException(bookMapper.updateStatus(book),"更改图书状态失败");
         return book;
